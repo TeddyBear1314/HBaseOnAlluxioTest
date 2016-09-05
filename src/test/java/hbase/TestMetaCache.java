@@ -43,9 +43,6 @@ public class TestMetaCache {
   private static final byte[] FAMILY = Bytes.toBytes("fam1");
   private static final byte[] QUALIFIER = Bytes.toBytes("qual");
 
-  /**
-   * @throws Exception
-   */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
     Configuration conf = TEST_UTIL.getConfiguration();
@@ -57,9 +54,7 @@ public class TestMetaCache {
   public static void tearDownAfterClass() {
     TEST_UTIL.getConfiguration().setInt("hbase.client.retries.number", 36);
   }
-  /**
-   * @throws Exception
-   */
+
   @Before
   public void setup() throws Exception {
 
@@ -73,7 +68,6 @@ public class TestMetaCache {
     }
     TEST_UTIL.waitUntilAllRegionsAssigned(TABLE_NAME);
   }
-
 
   @Test
   public void testPreserveMetaCacheOnException() throws Exception {
@@ -92,10 +86,8 @@ public class TestMetaCache {
     mutations.add(put);
     mutations.add(delete);
 
-    Exception exp;
     boolean success;
     for (int i = 0; i < 50; i++) {
-      exp = null;
       success =false;
       try {
         table.put(put);
@@ -107,10 +99,7 @@ public class TestMetaCache {
         table.delete(delete);
         table.mutateRow(mutations);
       } catch (IOException ex) {
-        // Only keep track of the last exception that updated the meta cache
-        if (ClientExceptionsUtil.isMetaClearingException(ex) || success) {
-          exp = ex;
-        }
+
       }
     }
   }

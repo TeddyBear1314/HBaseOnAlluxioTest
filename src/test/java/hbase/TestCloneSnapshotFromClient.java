@@ -17,9 +17,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-/**
- * Created by zhihuan1 on 8/31/2016.
- */
 public class TestCloneSnapshotFromClient {
     private static HBaseUtility util = new HBaseUtility();
     private final byte[] FAMILY = Bytes.toBytes("cf");
@@ -56,6 +53,7 @@ public class TestCloneSnapshotFromClient {
         util.getConfiguration().setBoolean(
                 "hbase.master.enabletable.roundrobin", true);
     }
+
     @Before
     public void setUp() throws Exception {
         admin = util.getAdmin();

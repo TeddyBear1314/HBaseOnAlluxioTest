@@ -15,6 +15,7 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.util.Threads;
 import org.apache.hadoop.util.StringUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -56,7 +57,6 @@ public class TestMetaScanner {
 
       @Override
       public void close() throws IOException {
-
       }
     };
 
@@ -203,5 +203,4 @@ public class TestMetaScanner {
     regionMetaSplitter.rethrowExceptionIfAny();
     metaScannerVerifier.rethrowExceptionIfAny();
   }
-
 }

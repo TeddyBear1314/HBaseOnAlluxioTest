@@ -1,7 +1,5 @@
 package hbase;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.CategoryBasedTimeout;
 import org.apache.hadoop.hbase.Cell;
@@ -26,8 +24,6 @@ import org.junit.rules.TestName;
 import org.junit.rules.TestRule;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -43,9 +39,6 @@ public class TestIncrementsFromClientSide {
   @Rule public TestName name = new TestName();
   @Rule public final TestRule timeout = CategoryBasedTimeout.builder().withTimeout(this.getClass()).
       withLookingForStuckThread(true).build();
-  public static Collection<Object []> data() {
-    return Arrays.asList(new Object[] {Boolean.FALSE}, new Object [] {Boolean.TRUE});
-  }
 
   @BeforeClass
   public static void beforeClass() throws Exception {
@@ -53,10 +46,8 @@ public class TestIncrementsFromClientSide {
     conf.setStrings(CoprocessorHost.REGION_COPROCESSOR_CONF_KEY,
         MultiRowMutationEndpoint.class.getName());
     conf.setBoolean("hbase.table.sanity.checks", true); // enable for below tests
-    // We need more than one region server in this test
     admin = TEST_UTIL.getAdmin();
   }
-
 
   @Test
   public void testIncrementWithDeletes() throws Exception {
@@ -262,9 +253,6 @@ public class TestIncrementsFromClientSide {
         Bytes.toBytes("g"), Bytes.toBytes("h"), Bytes.toBytes("i")
     };
 
-    // Do some simple single-column increments
-
-    // First with old API
     ht.incrementColumnValue(ROW, FAMILY, QUALIFIERS[0], 1);
     ht.incrementColumnValue(ROW, FAMILY, QUALIFIERS[1], 2);
     ht.incrementColumnValue(ROW, FAMILY, QUALIFIERS[2], 3);
@@ -332,10 +320,6 @@ public class TestIncrementsFromClientSide {
     }
   }
 
-
-  /**
-   * Call over to the adjacent class's method of same name.
-   */
   static void assertIncrementKey(Cell key, byte [] row, byte [] family,
                                  byte [] qualifier, long value) throws Exception {
     assertTrue("Expected row [" + Bytes.toString(row) + "] " +

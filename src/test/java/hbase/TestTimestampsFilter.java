@@ -93,7 +93,6 @@ public class TestTimestampsFilter {
     kvs = getNVersions(ht, FAMILY, 2, 2, new ArrayList<Long>());
     assertEquals(0, kvs == null? 0: kvs.length);
 
-    //
     // Test the filter using a Scan operation
     // Scan rows 0..4. For each row, get all its columns, but only
     // those versions of the columns with the specified timestamps.
@@ -263,7 +262,6 @@ public class TestTimestampsFilter {
   /**
    * Uses the TimestampFilter on a Get to request a specified list of
    * versions for the row/column specified by rowIdx & colIdx.
-   *
    */
   private  Cell[] getNVersions(Table ht, byte[] cf, int rowIdx,
                                int colIdx, List<Long> versions)
@@ -329,7 +327,6 @@ public class TestTimestampsFilter {
     del.deleteColumn(cf, column, version);
     ht.delete(del);
   }
-
 }
 
 

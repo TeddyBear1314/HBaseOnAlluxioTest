@@ -17,9 +17,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-/**
- * Created by zhihuan1 on 8/30/2016.
- */
 public class TestCheckAndMutate {
     private static HBaseUtility util = new HBaseUtility();
     private static Admin admin;

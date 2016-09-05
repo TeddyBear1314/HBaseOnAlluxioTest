@@ -87,7 +87,7 @@ public class TestSnapshotFromClient {
    * Test snapshotting not allowed hbase:meta and -ROOT-
    * @throws Exception
    */
-  @Test (timeout=300000)
+  @Test
   public void testMetaTablesSnapshot() throws Exception {
     Admin admin = UTIL.getAdmin();
     byte[] snapshotName = Bytes.toBytes("metaSnapshot");
@@ -105,7 +105,7 @@ public class TestSnapshotFromClient {
    *
    * @throws Exception
    */
-  @Test (timeout=300000)
+  @Test
   public void testSnapshotDeletionWithRegex() throws Exception {
     Admin admin = UTIL.getAdmin();
     // make sure we don't fail on listing snapshots
@@ -141,7 +141,7 @@ public class TestSnapshotFromClient {
    * Test snapshotting a table that is offline
    * @throws Exception
    */
-  @Test (timeout=300000)
+  @Test
   public void testOfflineTableSnapshot() throws Exception {
     Admin admin = UTIL.getAdmin();
     // make sure we don't fail on listing snapshots
@@ -176,20 +176,17 @@ public class TestSnapshotFromClient {
     LOG.debug("Snapshot completed.");
 
     // make sure we have the snapshot
-    List<SnapshotDescription> snapshots = SnapshotUtility.assertOneSnapshotThatMatches(admin,
+    SnapshotUtility.assertOneSnapshotThatMatches(admin,
       snapshot, TABLE_NAME);
-
 
     FSUtils.logFileSystemState(UTIL.getTestFileSystem(),
       FSUtils.getRootDir(UTIL.getConfiguration()), LOG);
 
-
     admin.deleteSnapshot(snapshot);
-    snapshots = admin.listSnapshots();
     SnapshotUtility.assertNoSnapshots(admin);
   }
 
-  @Test (timeout=300000)
+  @Test
   public void testSnapshotFailsOnNonExistantTable() throws Exception {
     Admin admin = UTIL.getAdmin();
     // make sure we don't fail on listing snapshots
@@ -218,7 +215,7 @@ public class TestSnapshotFromClient {
     }
   }
 
-  @Test (timeout=300000)
+  @Test
   public void testOfflineTableSnapshotWithEmptyRegions() throws Exception {
     // test with an empty table with one region
 
@@ -247,14 +244,10 @@ public class TestSnapshotFromClient {
 
     LOG.debug("FS state after snapshot:");
     FSUtils.logFileSystemState(UTIL.getTestFileSystem(),
-      FSUtils.getRootDir(UTIL.getConfiguration()), LOG);
-
-    List<byte[]> emptyCfs = Lists.newArrayList(TEST_FAM); // no file in the region
-    List<byte[]> nonEmptyCfs = Lists.newArrayList();
-
+            FSUtils.getRootDir(UTIL.getConfiguration()), LOG);
 
     admin.deleteSnapshot(snapshot);
-    snapshots = admin.listSnapshots();
+    admin.listSnapshots();
     SnapshotUtility.assertNoSnapshots(admin);
   }
 }

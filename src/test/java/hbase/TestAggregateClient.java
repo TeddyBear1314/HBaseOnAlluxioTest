@@ -1,4 +1,5 @@
 package hbase;
+
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
@@ -20,11 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by zhihuan1 on 8/18/2016.
- */
 public class TestAggregateClient {
-
     private static final TableName TEST_TABLE = TableName.valueOf("AggregateClientTest");
     private static final byte[] TEST_FAMILY = Bytes.toBytes("family");
     private static final byte[] TEST_QUALIFIER = Bytes.toBytes("qualifier");
@@ -48,9 +45,9 @@ public class TestAggregateClient {
         }
         return ret;
     }
+
     @BeforeClass
     public static void setUp() throws Exception {
-
         final byte[][] SPLIT_KEYS = new byte[][] {ROWS[rowSeparator1], ROWS[rowSeparator2]};
         util.deleteTableIfExists(TEST_TABLE);
         HTableDescriptor desc = new HTableDescriptor(TEST_TABLE);
@@ -75,7 +72,6 @@ public class TestAggregateClient {
         scan = new Scan();
         scan.addColumn(TEST_FAMILY, TEST_QUALIFIER);
         aggregationClient = new AggregationClient(util.getConfiguration());
-
     }
 
     @Test
@@ -85,6 +81,7 @@ public class TestAggregateClient {
         long median = aggregationClient.median(TEST_TABLE, ci, scan);
         System.out.println("the median in the table " + median);
     }
+
     @Test
     public void testMin() throws Throwable {
          double min = aggregationClient.min(table, new LongColumnInterpreter(), scan);
@@ -102,11 +99,13 @@ public class TestAggregateClient {
         Object avg = aggregationClient.avg(table, new LongColumnInterpreter(), scan);
         System.out.println("the avg in the table " + avg);
     }
+
     @Test
     public void testMax() throws Throwable {
         double max = aggregationClient.max(table, new LongColumnInterpreter(), scan);
         System.out.println("the max in the table " + max);
     }
+
     @Test
     public void testRowCount() throws Throwable {
         long rowcnt = aggregationClient.rowCount(table, new LongColumnInterpreter(), scan);

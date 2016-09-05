@@ -46,9 +46,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-/**
- * Created by zhihuan1 on 8/30/2016.
- */
 public class TestAdmin {
     private static HBaseUtility util = new HBaseUtility();
     private static Admin admin;
@@ -371,7 +368,7 @@ public class TestAdmin {
         assertFalse(this.admin.tableExists(tableName));
     }
 
-    @Test (timeout=300000)
+    @Test
     public void testShouldFailOnlineSchemaUpdateIfOnlineSchemaIsNotEnabled()
             throws Exception {
         final TableName tableName = TableName.valueOf("changeTableSchemaOnlineFailure");
@@ -402,7 +399,6 @@ public class TestAdmin {
         } catch (TableNotDisabledException re) {
             expectedException = true;
         }
-        //assertTrue("Online schema update should not happen.", expectedException);
 
         // Reset the value for the other tests
         util.getConfiguration().setBoolean(
@@ -491,7 +487,6 @@ public class TestAdmin {
         int numVersions = HColumnDescriptor.DEFAULT_VERSIONS;
         int blockSize = 1024000;
         splitTest(null, familyNames, rowCounts, numVersions, blockSize);
-
         byte[] splitKey = Bytes.toBytes(3500);
         splitTest(splitKey, familyNames, rowCounts, numVersions, blockSize);
     }
@@ -506,7 +501,6 @@ public class TestAdmin {
         }
         final HTable table = util.createTable(tableName, familyNames,
                 numVersions, blockSize);
-
         int rowCount = 0;
         byte[] q = new byte[0];
 
@@ -673,9 +667,9 @@ public class TestAdmin {
             this.admin.disableTable(TableName.META_TABLE_NAME);
             fail("Expected to throw ConstraintException");
         } catch (Exception e) {
+            //Expected
         }
-        // Before the fix for HBASE-6146, the below table creation was failing as the hbase:meta table
-        // actually getting disabled by the disableTable() call.
+
         HTableDescriptor htd = new HTableDescriptor(TableName.valueOf("testDisableCatalogTable".getBytes()));
         HColumnDescriptor hcd = new HColumnDescriptor("cf1".getBytes());
         htd.addFamily(hcd);
@@ -698,7 +692,7 @@ public class TestAdmin {
         }
     }
 
-    @Test (timeout=300000)
+    @Test
     public void testGetRegion() throws Exception {
         // We use actual HBaseAdmin instance instead of going via Admin interface in
         // here because makes use of an internal HBA method.
@@ -710,7 +704,6 @@ public class TestAdmin {
         HRegionLocation regionLocation = t.getRegionLocation("mmm");
         HRegionInfo region = regionLocation.getRegionInfo();
         byte[] regionName = region.getRegionName();
-
     }
 
     @Test
@@ -771,41 +764,6 @@ public class TestAdmin {
         ProcedureInfo[] procList = admin.listProcedures();
         assertTrue(procList.length >= 0);
     }
-
-    public static List<Cell> getFromStoreFile(HStore store,
-                                              byte [] row,
-                                              NavigableSet<byte[]> columns
-    ) throws IOException {
-        Get get = new Get(row);
-        Map<byte[], NavigableSet<byte[]>> s = get.getFamilyMap();
-        s.put(store.getFamily().getName(), columns);
-
-        return getFromStoreFile(store,get);
-    }
-
-    public static List<Cell> getFromStoreFile(HStore store,
-                                              Get get) throws IOException {
-        Scan scan = new Scan(get);
-        InternalScanner scanner = (InternalScanner) store.getScanner(scan,
-                scan.getFamilyMap().get(store.getFamily().getName()),
-                // originally MultiVersionConcurrencyControl.resetThreadReadPoint() was called to set
-                // readpoint 0.
-                0);
-
-        List<Cell> result = new ArrayList<Cell>();
-        scanner.next(result);
-        if (!result.isEmpty()) {
-            // verify that we are on the row we want:
-            Cell kv = result.get(0);
-            if (!CellUtil.matchingRow(kv, get.getRow())) {
-                result.clear();
-            }
-        }
-        scanner.close();
-        return result;
-    }
-
-
 
     @Test
     public void testEnableDisableAddColumnDeleteColumn() throws Exception {

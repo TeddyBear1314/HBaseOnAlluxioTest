@@ -107,7 +107,6 @@ public class TestMultipleTimestamps {
   @Test
   public void testReseeksWithMultipleColumnMultipleTimestamp() throws
   IOException {
-
     TableName TABLE =
         TableName.valueOf("testReseeksWithMultipleColumnMiltipleTimestamps");
     byte [] FAMILY = Bytes.toBytes("event_log");
@@ -216,7 +215,6 @@ public class TestMultipleTimestamps {
 
   @Test
   public void testWithVersionDeletes() throws Exception {
-
     // first test from memstore (without flushing).
     testWithVersionDeletes(false);
 
@@ -258,7 +256,6 @@ public class TestMultipleTimestamps {
 
   @Test
   public void testWithMultipleVersionDeletes() throws IOException {
-
     TableName TABLE =
         TableName.valueOf("testWithMultipleVersionDeletes");
     byte [] FAMILY = Bytes.toBytes("event_log");
@@ -364,7 +361,6 @@ public class TestMultipleTimestamps {
   /**
    * Uses the TimestampFilter on a Get to request a specified list of
    * versions for the row/column specified by rowIdx & colIdx.
-   *
    */
   private  Cell[] getNVersions(Table ht, byte[] cf, int rowIdx,
                                int colIdx, List<Long> versions)
@@ -480,7 +476,6 @@ public class TestMultipleTimestamps {
     del.deleteFamily(cf);
     ht.delete(del);
   }
-
 }
 
 

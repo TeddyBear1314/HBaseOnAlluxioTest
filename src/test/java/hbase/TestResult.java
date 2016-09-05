@@ -11,6 +11,7 @@ import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.protobuf.generated.ClientProtos;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -44,6 +45,7 @@ public class TestResult extends TestCase {
    * Run some tests to ensure Result acts like a proper CellScanner.
    * @throws IOException
    */
+  @Test
   public void testResultAsCellScanner() throws IOException {
     Cell[] cells = genKVs(row, family, value, 1, 10);
     Arrays.sort(cells, KeyValue.COMPARATOR);
@@ -65,6 +67,7 @@ public class TestResult extends TestCase {
     assertEquals(cells.length, count);
   }
 
+  @Test
   public void testBasicGetColumn() throws Exception {
     KeyValue[] kvs = genKVs(row, family, value, 1, 100);
 
@@ -74,7 +77,6 @@ public class TestResult extends TestCase {
 
     for (int i = 0; i < 100; ++i) {
       final byte[] qf = Bytes.toBytes(i);
-
       List<Cell> ks = r.getColumnCells(family, qf);
       assertEquals(1, ks.size());
       assertTrue(CellUtil.matchingQualifier(ks.get(0), qf));
@@ -82,6 +84,7 @@ public class TestResult extends TestCase {
     }
   }
 
+  @Test
   public void testMultiVersionGetColumn() throws Exception {
     KeyValue[] kvs1 = genKVs(row, family, value, 1, 100);
     KeyValue[] kvs2 = genKVs(row, family, value, 200, 100);
@@ -95,7 +98,6 @@ public class TestResult extends TestCase {
     Result r = Result.create(kvs);
     for (int i = 0; i < 100; ++i) {
       final byte[] qf = Bytes.toBytes(i);
-
       List<Cell> ks = r.getColumnCells(family, qf);
       assertEquals(2, ks.size());
       assertTrue(CellUtil.matchingQualifier(ks.get(0), qf));
@@ -104,6 +106,7 @@ public class TestResult extends TestCase {
     }
   }
 
+  @Test
   public void testBasicGetValue() throws Exception {
     KeyValue[] kvs = genKVs(row, family, value, 1, 100);
 
@@ -113,7 +116,6 @@ public class TestResult extends TestCase {
 
     for (int i = 0; i < 100; ++i) {
       final byte[] qf = Bytes.toBytes(i);
-
       assertByteEquals(Bytes.add(value, Bytes.toBytes(i)), r.getValue(family, qf));
       assertTrue(r.containsColumn(family, qf));
     }
@@ -127,6 +129,7 @@ public class TestResult extends TestCase {
     }
   }
 
+  @Test
   public void testMultiVersionGetValue() throws Exception {
     KeyValue[] kvs1 = genKVs(row, family, value, 1, 100);
     KeyValue[] kvs2 = genKVs(row, family, value, 200, 100);
@@ -140,12 +143,12 @@ public class TestResult extends TestCase {
     Result r = Result.create(kvs);
     for (int i = 0; i < 100; ++i) {
       final byte[] qf = Bytes.toBytes(i);
-
       assertByteEquals(Bytes.add(value, Bytes.toBytes(i)), r.getValue(family, qf));
       assertTrue(r.containsColumn(family, qf));
     }
   }
 
+  @Test
   public void testBasicLoadValue() throws Exception {
     KeyValue[] kvs = genKVs(row, family, value, 1, 100);
 
@@ -156,7 +159,6 @@ public class TestResult extends TestCase {
 
     for (int i = 0; i < 100; ++i) {
       final byte[] qf = Bytes.toBytes(i);
-
       loadValueBuffer.clear();
       r.loadValue(family, qf, loadValueBuffer);
       loadValueBuffer.flip();
@@ -166,6 +168,7 @@ public class TestResult extends TestCase {
     }
   }
 
+  @Test
   public void testMultiVersionLoadValue() throws Exception {
     KeyValue[] kvs1 = genKVs(row, family, value, 1, 100);
     KeyValue[] kvs2 = genKVs(row, family, value, 200, 100);
@@ -181,7 +184,6 @@ public class TestResult extends TestCase {
     Result r = Result.create(kvs);
     for (int i = 0; i < 100; ++i) {
       final byte[] qf = Bytes.toBytes(i);
-
       loadValueBuffer.clear();
       r.loadValue(family, qf, loadValueBuffer);
       loadValueBuffer.flip();
@@ -194,6 +196,7 @@ public class TestResult extends TestCase {
   /**
    * Verify that Result.compareResults(...) behaves correctly.
    */
+  @Test
   public void testCompareResults() throws Exception {
     byte [] value1 = Bytes.toBytes("value1");
     byte [] qual = Bytes.toBytes("qual");
@@ -206,7 +209,6 @@ public class TestResult extends TestCase {
     // no exception thrown
     Result.compareResults(r1, r1);
     try {
-      // these are different (HBASE-4800)
       Result.compareResults(r1, r2);
       fail();
     } catch (Exception x) {
@@ -217,6 +219,7 @@ public class TestResult extends TestCase {
   /**
    * Verifies that one can't modify instance of EMPTY_RESULT.
    */
+  @Test
   public void testEmptyResultIsReadonly() {
     Result emptyResult = Result.EMPTY_RESULT;
     Result otherResult = new Result();
@@ -241,12 +244,8 @@ public class TestResult extends TestCase {
     }
   }
 
-  /**
-   * Microbenchmark that compares {@link Result#getValue} and {@link Result#loadValue} performance.
-   *
-   * @throws Exception
-   */
-  public void doReadBenchmark() throws Exception {
+  @Test
+  public void testReadBenchmark() throws Exception {
 
     final int n = 5;
     final int m = 100000000;
@@ -303,19 +302,5 @@ public class TestResult extends TestCase {
     }
     stop = System.nanoTime();
     System.out.println("getValue():  " + (stop - start));
-  }
-
-  /**
-   * Calls non-functional test methods.
-   *
-   * @param args
-   */
-  public static void main(String[] args) {
-    TestResult testResult = new TestResult();
-    try {
-      testResult.doReadBenchmark();
-    } catch (Exception e) {
-      LOG.error("Unexpected exception", e);
-    }
   }
 }

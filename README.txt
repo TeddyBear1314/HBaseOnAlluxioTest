@@ -4,5 +4,10 @@
 通过hbase shell删除hbase中所有表：disable_all '.*'
                               drop_all '.*'
 
-第一个集成测试：
+第一个集成测试：(将需要hadoop的区分出来)
 bin/hbase org.apache.hadoop.hbase.IntegrationTestIngestStripeCompactions
+bin/hbase org.apache.hadoop.hbase.IntegrationTestIngest
+hbase-1.2.2/bin/hbase org.apache.hadoop.hbase.IntegrationTestDDLMasterFailover
+hbase-1.2.2/bin/hbase org.apache.hadoop.hbase.IntegrationTestsDriver -r .*\\.IntegrationTestManyRegions
+hbase-1.2.2/bin/hbase org.apache.hadoop.hbase.IntegrationTestsDriver -r .*\\.IntegrationTestSendTracesTable
+

@@ -1,19 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements. See the NOTICE file distributed with this
- * work for additional information regarding copyright ownership. The ASF
- * licenses this file to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations
- * under the License.
- */
 package hbase;
 
 import org.apache.hadoop.fs.FileSystem;
@@ -52,7 +36,6 @@ public class TestIntraRowPagination {
    */
   @Test
   public void testScanLimitAndOffset() throws Exception {
-    //byte [] TABLE = HTestConst.DEFAULT_TABLE_BYTES;
     byte [][] ROWS = HTestConst.makeNAscii(HTestConst.DEFAULT_ROW_BYTES, 2);
     byte [][] FAMILIES = HTestConst.makeNAscii(HTestConst.DEFAULT_CF_BYTES, 3);
     byte [][] QUALIFIERS = HTestConst.makeNAscii(HTestConst.DEFAULT_QUALIFIER_BYTES, 10);
@@ -75,7 +58,7 @@ public class TestIntraRowPagination {
       Result result;
       boolean toLog = true;
 
-      List<Cell> kvListExp = new ArrayList<Cell>();
+      List<Cell> kvListExp = new ArrayList<>();
 
       int storeOffset = 1;
       int storeLimit = 3;
@@ -98,8 +81,8 @@ public class TestIntraRowPagination {
       scan.setRowOffsetPerColumnFamily(storeOffset);
       scan.setMaxResultsPerColumnFamily(storeLimit);
       RegionScanner scanner = region.getScanner(scan);
-      List<Cell> kvListScan = new ArrayList<Cell>();
-      List<Cell> results = new ArrayList<Cell>();
+      List<Cell> kvListScan = new ArrayList<>();
+      List<Cell> results = new ArrayList<>();
       while (scanner.next(results) || !results.isEmpty()) {
         kvListScan.addAll(results);
         results.clear();

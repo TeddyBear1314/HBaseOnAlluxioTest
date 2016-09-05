@@ -8,10 +8,8 @@ import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.HRegionInfo;
 import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.KeepDeletedCells;
 import org.apache.hadoop.hbase.NamespaceDescriptor;
 import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.TableNotEnabledException;
 import org.apache.hadoop.hbase.TableNotFoundException;
 import org.apache.hadoop.hbase.Waiter;
 import org.apache.hadoop.hbase.Waiter.Predicate;
@@ -374,7 +372,6 @@ public class HBaseUtility {
         }
     }
 
-
     public void waitUntilAllRegionsAssigned(final TableName tableName) throws IOException {
         waitUntilAllRegionsAssigned(tableName,this.conf.getLong("hbase.client.sync.wait.timeout.msec", 60000));
     }
@@ -409,7 +406,6 @@ public class HBaseUtility {
         } finally {
             meta.close();
         }
-
     }
 
     public <E extends Exception> long waitFor(long timeout, Predicate<E> predicate)
@@ -438,7 +434,6 @@ public class HBaseUtility {
             public String explainFailure() throws IOException {
                 return explainTableState(tableName);
             }
-
             @Override
             public boolean evaluate() throws IOException {
                 return getAdmin().tableExists(tableName) && getAdmin().isTableEnabled(tableName);
@@ -492,5 +487,4 @@ public class HBaseUtility {
     public FileSystem getTestFileSystem() throws IOException {
         return HFileSystem.get(conf);
     }
-
 }

@@ -1,21 +1,3 @@
-/*
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package hbase;
 
 import org.apache.hadoop.hbase.Cell;
@@ -73,10 +55,10 @@ public class TestMultiParallel {
   private static final byte[] ONE_ROW = Bytes.toBytes("xxx");
   private static final byte [][] KEYS = makeKeys();
 
-  private static final int slaves = 5; // also used for testing HTable pool size
   private static Connection CONNECTION;
 
-  @BeforeClass public static void beforeClass() throws Exception {
+  @BeforeClass
+  public static void beforeClass() throws Exception {
     UTIL.getConfiguration().set(HConstants.RPC_CODEC_CONF_KEY,
         KeyValueCodec.class.getCanonicalName());
     HTable t = (HTable) UTIL.createMultiRegionTable(TEST_TABLE, Bytes.toBytes(FAMILY));
@@ -85,14 +67,10 @@ public class TestMultiParallel {
     CONNECTION = ConnectionFactory.createConnection(UTIL.getConfiguration());
   }
 
-
-  @Before public void before() throws Exception {
-
-
+  @Before
+  public void before() throws Exception {
       UTIL.getAdmin().balancer();
-
       Thread.sleep(500);
-
   }
 
   private static byte[][] makeKeys() {
@@ -129,41 +107,7 @@ public class TestMultiParallel {
     return keys.toArray(new byte [][] {new byte [] {}});
   }
 
-
-  /**
-   * This is for testing the active number of threads that were used while
-   * doing a batch operation. It inserts one row per region via the batch
-   * operation, and then checks the number of active threads.
-   * For HBASE-3553
-   * @throws IOException
-   * @throws InterruptedException
-   * @throws NoSuchFieldException
-   * @throws SecurityException
-   */
-  @Ignore ("Nice bug flakey... expected 5 but was 4..") @Test(timeout=300000)
-  public void testActiveThreadsCount() throws Exception {
-    try (Connection connection = ConnectionFactory.createConnection(UTIL.getConfiguration())) {
-      ThreadPoolExecutor executor = HTable.getDefaultExecutor(UTIL.getConfiguration());
-      try {
-        try (Table t = connection.getTable(TEST_TABLE, executor)) {
-          List<Put> puts = constructPutRequests(); // creates a Put for every region
-          t.batch(puts);
-          HashSet<ServerName> regionservers = new HashSet<ServerName>();
-          try (RegionLocator locator = connection.getRegionLocator(TEST_TABLE)) {
-            for (Row r : puts) {
-              HRegionLocation location = locator.getRegionLocation(r.getRow());
-              regionservers.add(location.getServerName());
-            }
-          }
-          assertEquals(regionservers.size(), executor.getLargestPoolSize());
-        }
-      } finally {
-        executor.shutdownNow();
-      }
-    }
-  }
-
-  @Test(timeout=300000)
+  @Test
   public void testBatchWithGet() throws Exception {
     Table table = new HTable(UTIL.getConfiguration(), TEST_TABLE);
 
@@ -214,7 +158,6 @@ public class TestMultiParallel {
     actions.add(p);
 
     // row1 and row2 should be in the same region.
-
     Object [] r = new Object[actions.size()];
     try {
       table.batch(actions, r);
@@ -229,27 +172,16 @@ public class TestMultiParallel {
     table.close();
   }
 
-  @Test (timeout=300000)
+  @Test
   public void testFlushCommitsNoAbort() throws Exception {
     doTestFlushCommits(false);
   }
 
-  /**
-   * Only run one Multi test with a forced RegionServer abort. Otherwise, the
-   * unit tests will take an unnecessarily long time to run.
-   *
-   * @throws Exception
-   */
-  @Test (timeout=360000)
+  @Test
   public void testFlushCommitsWithAbort() throws Exception {
     doTestFlushCommits(true);
   }
 
-  /**
-   * Set table auto flush to false and test flushing commits
-   * @param doAbort true if abort one regionserver in the testing
-   * @throws Exception
-   */
   private void doTestFlushCommits(boolean doAbort) throws Exception {
     // Load the data
     Table table = UTIL.getConnection().getTable(TEST_TABLE);
@@ -268,13 +200,12 @@ public class TestMultiParallel {
     // Validate server and region count
 
     if (doAbort) {
-
     }
 
     table.close();
   }
 
-  @Test (timeout=300000)
+  @Test
   public void testBatchWithPut() throws Exception {
     Table table = CONNECTION.getTable(TEST_TABLE);
     // put multiple rows using a batch
@@ -283,8 +214,6 @@ public class TestMultiParallel {
     Object[] results = table.batch(puts);
     validateSizeAndEmpty(results, KEYS.length);
 
-    if (true) {
-
       puts = constructPutRequests();
       try {
         results = table.batch(puts);
@@ -292,14 +221,12 @@ public class TestMultiParallel {
         table.close();
         throw ree;
       }
-      validateSizeAndEmpty(results, KEYS.length);
-    }
-
+    validateSizeAndEmpty(results, KEYS.length);
     validateLoadedData(table);
     table.close();
   }
 
-  @Test(timeout=300000)
+  @Test
   public void testBatchWithDelete() throws Exception {
     Table table = new HTable(UTIL.getConfiguration(), TEST_TABLE);
 
@@ -327,7 +254,7 @@ public class TestMultiParallel {
     table.close();
   }
 
-  @Test(timeout=300000)
+  @Test
   public void testHTableDeleteWithList() throws Exception {
     Table table = new HTable(UTIL.getConfiguration(), TEST_TABLE);
 
@@ -355,7 +282,7 @@ public class TestMultiParallel {
     table.close();
   }
 
-  @Test(timeout=300000)
+  @Test
   public void testBatchWithManyColsInOneRowGetAndPut() throws Exception {
     Table table = new HTable(UTIL.getConfiguration(), TEST_TABLE);
 
@@ -391,7 +318,7 @@ public class TestMultiParallel {
     table.close();
   }
 
-  @Test(timeout=300000)
+  @Test
   public void testBatchWithIncrementAndAppend() throws Exception {
     final byte[] QUAL1 = Bytes.toBytes("qual1");
     final byte[] QUAL2 = Bytes.toBytes("qual2");
@@ -424,7 +351,7 @@ public class TestMultiParallel {
     table.close();
   }
 
-  @Test(timeout=300000)
+  @Test
   public void testNonceCollision() throws Exception {
     final Connection connection = ConnectionFactory.createConnection(UTIL.getConfiguration());
     Table table = connection.getTable(TEST_TABLE);
@@ -447,11 +374,7 @@ public class TestMultiParallel {
       }
     };
 
-    NonceGenerator oldCnm =
-      ConnectionUtils.injectNonceGeneratorForTesting((ClusterConnection)connection, cnm);
-
-    // First test sequential requests.
-
+      // First test sequential requests.
       Increment inc = new Increment(ONE_ROW);
       inc.addColumn(BYTES_FAMILY, QUALIFIER, 1L);
       table.increment(inc);
@@ -512,7 +435,7 @@ public class TestMultiParallel {
       table.close();
   }
 
-  @Test(timeout=300000)
+  @Test
   public void testBatchWithMixedActions() throws Exception {
     Table table = new HTable(UTIL.getConfiguration(), TEST_TABLE);
 
@@ -564,7 +487,6 @@ public class TestMultiParallel {
     results = table.batch(actions);
 
     // Validation
-
     validateResult(results[0]);
     validateResult(results[1]);
     validateEmpty(results[2]);
@@ -580,8 +502,6 @@ public class TestMultiParallel {
 
     table.close();
   }
-
-  // // Helper methods ////
 
   private void validateResult(Object r) {
     validateResult(r, QUALIFIER, VALUE);
@@ -609,7 +529,7 @@ public class TestMultiParallel {
 
   private void validateLoadedData(Table table) throws IOException {
     // get the data back and validate that it is correct
-    List<Get> gets = new ArrayList<Get>();
+    List<Get> gets = new ArrayList<>();
     for (byte[] k : KEYS) {
       Get get = new Get(k);
       get.addColumn(BYTES_FAMILY, QUALIFIER);

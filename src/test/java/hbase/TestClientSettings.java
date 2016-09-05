@@ -47,9 +47,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-/**
- * Created by zhihuan1 on 8/31/2016.
- */
 public class TestClientSettings {
     private static HBaseUtility util = new HBaseUtility();
     private static HBaseAdmin admin;
@@ -76,15 +73,6 @@ public class TestClientSettings {
     }
     @Test
     public void testAdvancedConfigOverride() throws Exception {
-    /*
-     * Overall idea: (1) create 3 store files and issue a compaction. config's
-     * compaction.min == 3, so should work. (2) Increase the compaction.min
-     * toggle in the HTD to 5 and modify table. If we use the HTD value instead
-     * of the default config value, adding 3 files and issuing a compaction
-     * SHOULD NOT work (3) Decrease the compaction.min toggle in the HCD to 2
-     * and modify table. The CF schema should override the Table schema and now
-     * cause a minor compaction.
-     */
         util.getConfiguration().setInt("hbase.hstore.compaction.min", 3);
 
         String tableName = "testAdvancedConfigOverride";
@@ -121,6 +109,7 @@ public class TestClientSettings {
             }
             Thread.sleep(40);
         }
+
         // verify the compactions took place and that we didn't just time out
         assertTrue(ProtobufUtil.getStoreFiles(
                 server, regionName, FAMILY).size() <= 1);
@@ -176,6 +165,7 @@ public class TestClientSettings {
             }
             Thread.sleep(40);
         }
+
         // verify the compaction took place and that we didn't just time out
         assertTrue(ProtobufUtil.getStoreFiles(
                 server, regionName, FAMILY).size() < sfCount);
@@ -263,6 +253,7 @@ public class TestClientSettings {
         try {
             List actions = (List) new ArrayList();
             Object[] results = new Object[2];
+
             // create an empty Put
             Put put1 = new Put(ROW);
             actions.add(put1);
@@ -274,7 +265,7 @@ public class TestClientSettings {
             table.batch(actions, results);
             fail("Empty Put should have failed the batch call");
         } catch (IllegalArgumentException iae) {
-
+           //Expected
         } finally {
             table.close();
         }
@@ -282,7 +273,6 @@ public class TestClientSettings {
     private void performMultiplePutAndFlush(HBaseAdmin admin, HTable table,
                                             byte[] row, byte[] family, int nFlushes, int nPuts)
             throws Exception {
-
         // connection needed for poll-wait
         HRegionLocation loc = table.getRegionLocation(row, true);
         AdminProtos.AdminService.BlockingInterface server =
@@ -294,7 +284,6 @@ public class TestClientSettings {
             List<String> sf = ProtobufUtil.getStoreFiles(server, regName, FAMILY);
             int sfCount = sf.size();
 
-            // TODO: replace this api with a synchronous flush after HBASE-2949
             admin.flush(table.getTableName());
 
             // synchronously poll wait for a new storefile to appear (flush happened)
@@ -418,7 +407,6 @@ public class TestClientSettings {
     public void testHTableExistsMethodSingleRegionSingleGet() throws Exception {
 
         // Test with a single region table.
-
         Table table = util.createTable(
                 Bytes.toBytes("testHTableExistsMethodSingleRegionSingleGet"), new byte[][] { FAMILY });
 
@@ -493,7 +481,6 @@ public class TestClientSettings {
 
     @Test
     public void testHTableExistsMethodMultipleRegionsSingleGet() throws Exception {
-
         Table table = util.createTable(
                 TableName.valueOf("testHTableExistsMethodMultipleRegionsSingleGet"), new byte[][] { FAMILY },
                 1, new byte[] { 0x00 }, new byte[] { (byte) 0xff }, 255);
@@ -537,7 +524,7 @@ public class TestClientSettings {
         put.addColumn(FAMILY, QUALIFIER, VALUE);
         table.put(put);
 
-        gets = new ArrayList<Get>();
+        gets = new ArrayList<>();
         gets.add(new Get(new byte[] { 0x00 }));
         gets.add(new Get(new byte[] { 0x00, 0x00 }));
         results = table.exists(gets);
@@ -549,7 +536,7 @@ public class TestClientSettings {
         put.addColumn(FAMILY, QUALIFIER, VALUE);
         table.put(put);
 
-        gets = new ArrayList<Get>();
+        gets = new ArrayList<>();
         gets.add(new Get(new byte[] { (byte) 0xff }));
         gets.add(new Get(new byte[] { (byte) 0xff, (byte) 0xff }));
         gets.add(new Get(new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff }));
@@ -640,7 +627,6 @@ public class TestClientSettings {
         // allFilters.addFilter(new
         // RowExcludingSingleColumnValueFilter(Bytes.toBytes("trans-tags"),
         // Bytes.toBytes("qual2"), CompareOp.EQUAL, Bytes.toBytes(value)));
-
         Scan scan = new Scan();
         scan.addFamily(Bytes.toBytes("trans-blob"));
         scan.addFamily(Bytes.toBytes("trans-type"));

@@ -32,7 +32,6 @@ public class TestHTableMultiplexer {
     admin = util.getAdmin();
   }
 
-
   private static void checkExistence(HTable htable, byte[] row, byte[] family, byte[] quality)
       throws Exception {
     // verify that the Get returns the correct result
