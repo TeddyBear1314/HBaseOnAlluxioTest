@@ -5,23 +5,24 @@ This is a repo for HBase on Alluxio Integration Test
 + Hadoop2.7.1
 + Alluxio1.2.0(build with Hadoop2.7.1)
 + HBase1.2.2(build with Hadoop2.7.1)(可以独立安装一个zookeeper ensemble供HBase使用)
+
 (以上软件的配置项可以参考conf目录下的配置文件)
 
 #### 2、然后将本工程拷到其中任何一个节点上(该节点可以作为HBase和Hadoop的Client即可)
 
 ##### 该测试分为3个部分:
-  1.第一部分为单元测试,使用junit编写(参考HBase Client UnitTest):
+###### 1.第一部分为单元测试,使用junit编写(参考HBase Client UnitTest):
   
   运行方式为：
   
      到项目根目录下运行：mvn test
 
-  2.第二部分为Hadoop Utility测试,测试命令在bin/hadoop_utility_test.sh中,
+###### 2.第二部分为Hadoop Utility测试,测试命令在bin/hadoop_utility_test.sh中,
   
   **需要export ${HBASE_HOME}或者将${HBASE_HOME}替换为实际的HBase根目录**
   **需要准备tsv或csv文件作为输入并把脚本中所有文件路径替换为实际的路径**
   
-  3.第三部分为HBase的Integration Test,测试命令在bin/integration_test.sh中,
+###### 3.第三部分为HBase的Integration Test,测试命令在bin/integration_test.sh中,
   
   **需要先再在Base源码根目录下运行*mvn-compile*将HBase测试代码编译**
   
