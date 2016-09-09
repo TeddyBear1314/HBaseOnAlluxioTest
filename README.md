@@ -11,7 +11,9 @@ This is a repo for HBase on Alluxio Integration Test
 
 ##### 该测试分为3个部分:
   1.第一部分为单元测试,使用junit编写(参考HBase Client UnitTest):
+  
   运行方式为：
+  
      到项目根目录下运行：mvn test
 
   2.第二部分为Hadoop Utility测试,测试命令在bin/hadoop_utility_test.sh中,
